@@ -32,7 +32,7 @@ bin/**
 
 # Config files
 /configs/**
-!/configs/env.example.toml
+!/configs/env.example.*
 
 # utils
 tmp_app
