@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// httperr 구조체 정의
 type httperr struct {
 	type_    string
 	status   int
