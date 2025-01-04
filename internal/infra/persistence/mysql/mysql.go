@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+	"samsamoohooh-api/internal/application/core/domain"
 	"samsamoohooh-api/internal/infra/config"
 
 	"gorm.io/driver/mysql"
@@ -46,4 +47,14 @@ func NewMysql(
 	sqlDB.SetConnMaxLifetime(config.MysqlPool.SetConnMaxLifetime.Duration())
 
 	return &Mysql{DB: db}, nil
+}
+
+func (m *Mysql) Migrate() error {
+	return m.DB.AutoMigrate(
+		&domain.User{},
+		&domain.Group{},
+		&domain.Topic{},
+		&domain.Goal{},
+		&domain.Staff{},
+	)
 }
