@@ -20,11 +20,18 @@ type Config struct {
 		Database string `yaml:"database"`
 	} `yaml:"mysql"`
 
-	MysqlPool struct {
+	MysqlConn struct {
 		SetMaxIdleConns    int      `yaml:"setMaxIdleConns"`
 		SetMaxOpenConns    int      `yaml:"setMaxOpenConns"`
 		SetConnMaxLifeTime duration `yaml:"setConnMaxLifeTime"`
-	} `yaml:"mysqlPool"`
+	} `yaml:"mysqlConn"`
+
+	Token struct {
+		AccessExp  duration `yaml:"accessExp"`
+		RefreshExp duration `yaml:"refreshExp"`
+		NotBefore  duration `yaml:"notBefore"`
+		SecretKey  string   `yaml:"secretKey"`
+	} `yaml:"token"`
 }
 
 func NewConfig(path string) (*Config, error) {
