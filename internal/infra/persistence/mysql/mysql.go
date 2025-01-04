@@ -2,7 +2,7 @@ package mysql
 
 import (
 	"fmt"
-	"samsamoohooh-api/internal/application/core/domain"
+	"samsamoohooh-api/internal/application/domain"
 	"samsamoohooh-api/internal/infra/config"
 
 	"gorm.io/driver/mysql"
@@ -42,9 +42,9 @@ func NewMysql(
 	if err != nil {
 		return nil, fmt.Errorf("failed to unwarp sql.DB: %w", err)
 	}
-	sqlDB.SetMaxIdleConns(config.MysqlPool.SetMaxIdleConns)
-	sqlDB.SetMaxOpenConns(config.MysqlPool.SetMaxOpenConns)
-	sqlDB.SetConnMaxLifetime(config.MysqlPool.SetConnMaxLifeTime.Duration())
+	sqlDB.SetMaxIdleConns(config.MysqlConn.SetMaxIdleConns)
+	sqlDB.SetMaxOpenConns(config.MysqlConn.SetMaxOpenConns)
+	sqlDB.SetConnMaxLifetime(config.MysqlConn.SetConnMaxLifeTime)
 
 	return &Mysql{DB: db}, nil
 }

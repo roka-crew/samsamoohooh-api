@@ -37,9 +37,6 @@ bin/**
 # utils
 tmp_app
 
-# erd
-*.erd.json
-
 # MacOS
 # General
 .DS_Store
