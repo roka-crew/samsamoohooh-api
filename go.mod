@@ -3,6 +3,8 @@ module samsamoohooh-api
 go 1.23.4
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/pkg/errors v0.9.1
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
