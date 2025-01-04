@@ -23,7 +23,7 @@ type Config struct {
 	MysqlPool struct {
 		SetMaxIdleConns    int      `yaml:"setMaxIdleConns"`
 		SetMaxOpenConns    int      `yaml:"setMaxOpenConns"`
-		SetConnMaxLifetime duration `yaml:"setConnMaxLifetime"`
+		SetConnMaxLifeTime duration `yaml:"setConnMaxLifeTime"`
 	} `yaml:"mysqlPool"`
 }
 

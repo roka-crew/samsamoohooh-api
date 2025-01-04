@@ -44,7 +44,7 @@ func NewMysql(
 	}
 	sqlDB.SetMaxIdleConns(config.MysqlPool.SetMaxIdleConns)
 	sqlDB.SetMaxOpenConns(config.MysqlPool.SetMaxOpenConns)
-	sqlDB.SetConnMaxLifetime(config.MysqlPool.SetConnMaxLifetime.Duration())
+	sqlDB.SetConnMaxLifetime(config.MysqlPool.SetConnMaxLifeTime.Duration())
 
 	return &Mysql{DB: db}, nil
 }
