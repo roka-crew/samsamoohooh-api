@@ -3,93 +3,95 @@ package httperr
 import "net/http"
 
 const (
-	// 📝 요청 관련 에러 (Request Errors)
+	// 📝 요청 관련 에러 (Request Errs)
 	// 요청 파싱 실패 - 400 BadRequest
-	ErrorRequestParsingFailed = "ERROR_REQUEST_PARSING_FAILED"
+	RequestParsingFailed = "ERROR_REQUEST_PARSING_FAILED"
 	// 유효하지 않은 Content-Type - 415 Unsupported Media Type
-	ErrorRequestInvalidContentType = "ERROR_REQUEST_INVALID_CONTENT_TYPE"
+	RequestInvalidContentType = "ERROR_REQUEST_INVALID_CONTENT_TYPE"
 
-	// 🔐 인증 및 권한 에러 (Authentication and Authorization Errors)
+	// 🔐 인증 및 권한 에러 (Authentication and Authorization Errs)
 	// 인증 실패 - 401 Unauthorized
-	ErrorAuthFailed = "ERROR_AUTH_FAILED"
-	// 토큰 만료 - 401 Unauthorized
-	ErrorAuthTokenExpired = "ERROR_AUTH_TOKEN_EXPIRED"
+	AuthFailed = "ERROR_AUTH_FAILED"
 	// 권한 없음 - 403 Forbidden
-	ErrorAuthPermissionDenied = "ERROR_AUTH_PERMISSION_DENIED"
+	AuthPermissionDenied = "ERROR_AUTH_PERMISSION_DENIED"
 
-	// ✅ 유효성 검증 에러 (Validation Errors)
+	// ✅ 유효성 검증 에러 (Validation Errs)
 	// 유효성 검증 실패 - 400 BadRequest
-	ErrorValidationFailed = "ERROR_VALIDATION_FAILED"
+	ValidationFailed = "ERROR_VALIDATION_FAILED"
 	// 필수 필드 누락 - 400 BadRequest
-	ErrorValidationRequiredFieldMissing = "ERROR_VALIDATION_REQUIRED_FIELD_MISSING"
+	ValidationRequiredFieldMissing = "ERROR_VALIDATION_REQUIRED_FIELD_MISSING"
 	// 형식 오류 - 400 BadRequest
-	ErrorValidationInvalidFormat = "ERROR_VALIDATION_INVALID_FORMAT"
+	ValidationInvalidFormat = "ERROR_VALIDATION_INVALID_FORMAT"
 
-	// 🗃️ 데이터베이스 에러 (Database Errors)
-	// 데이터베이스 오류 - 500 Internal Server Error
-	ErrorDatabaseFailed = "ERROR_DATABASE_FAILED"
+	// 토큰 에러 (Token Errs)
+
+	// 🗃️ 데이터베이스 에러 (Database Errs)
+	// 데이터베이스 오류 - 500 Internal Server Err
+	DatabaseFailed = "ERROR_DATABASE_FAILED"
 	// 중복 데이터 - 400 BadRequest
-	ErrorDatabaseDuplicateEntry = "ERROR_DATABASE_DUPLICATE_ENTRY"
+	DatabaseDuplicateEntry = "ERROR_DATABASE_DUPLICATE_ENTRY"
 	// 데이터 없음 - 404 NotFound
-	ErrorDatabaseRecordNotFound = "ERROR_DATABASE_RECORD_NOT_FOUND"
+	DatabaseRecordNotFound = "ERROR_DATABASE_RECORD_NOT_FOUND"
 
-	// ⚙️ 서버 에러 (Server Errors)
-	// 서버 오류 - 500 Internal Server Error
-	ErrorServerFailed = "ERROR_SERVER_FAILED"
+	// ⚙️ 서버 에러 (Server Errs)
+	// 서버 오류 - 500 Internal Server Err
+	ServerInternalError = "ERROR_SERVER_INTERNAL_ERROR"
 	// 서버 타임아웃 - 504 Gateway Timeout
-	ErrorServerTimeout = "ERROR_SERVER_TIMEOUT"
+	ServerTimeout = "ERROR_SERVER_TIMEOUT"
 	// 서버 과부하 - 503 Service Unavailable
-	ErrorServerOverload = "ERROR_SERVER_OVERLOAD"
+	ServerOverload = "ERROR_SERVER_OVERLOAD"
 
-	// 🌐 외부 서비스 에러 (External Service Errors)
+	// 🌐 외부 서비스 에러 (External Service Errs)
 	// 외부 서비스 오류 - 502 Bad Gateway
-	ErrorExternalServiceFailed = "ERROR_EXTERNAL_SERVICE_FAILED"
+	ExternalServiceFailed = "ERROR_EXTERNAL_SERVICE_FAILED"
 	// 외부 서비스 타임아웃 - 504 Gateway Timeout
-	ErrorExternalServiceTimeout = "ERROR_EXTERNAL_SERVICE_TIMEOUT"
+	ExternalServiceTimeout = "ERROR_EXTERNAL_SERVICE_TIMEOUT"
 	// 외부 서비스 사용 불가 - 503 Service Unavailable
-	ErrorExternalServiceUnavailable = "ERROR_EXTERNAL_SERVICE_UNAVAILABLE"
+	ExternalServiceUnavailable = "ERROR_EXTERNAL_SERVICE_UNAVAILABLE"
 )
 
 func statusOf(identifier string) int {
 	switch identifier {
-	// 📝 요청 관련 에러 (Request Errors)
-	case ErrorRequestParsingFailed:
+	// 📝 요청 관련 에러 (Request Errs)
+	case RequestParsingFailed:
 		return http.StatusBadRequest // 400
-	case ErrorRequestInvalidContentType:
+	case RequestInvalidContentType:
 		return http.StatusUnsupportedMediaType // 415
 
-	// 🔐 인증 및 권한 에러 (Authentication and Authorization Errors)
-	case ErrorAuthFailed, ErrorAuthTokenExpired:
+	// 🔐 인증 및 권한 에러 (Authentication and Authorization Errs)
+	case AuthFailed:
 		return http.StatusUnauthorized // 401
-	case ErrorAuthPermissionDenied:
+	case AuthPermissionDenied:
 		return http.StatusForbidden // 403
 
-	// ✅ 유효성 검증 에러 (Validation Errors)
-	case ErrorValidationFailed, ErrorValidationRequiredFieldMissing, ErrorValidationInvalidFormat:
+	// ✅ 유효성 검증 에러 (Validation Errs)
+	case ValidationFailed, ValidationRequiredFieldMissing, ValidationInvalidFormat:
 		return http.StatusBadRequest // 400
 
-	// 🗃️ 데이터베이스 에러 (Database Errors)
-	case ErrorDatabaseFailed:
+	// 토큰 에러 (Token Errs)
+
+	// 🗃️ 데이터베이스 에러 (Database Errs)
+	case DatabaseFailed:
 		return http.StatusInternalServerError // 500
-	case ErrorDatabaseDuplicateEntry:
+	case DatabaseDuplicateEntry:
 		return http.StatusBadRequest // 400
-	case ErrorDatabaseRecordNotFound:
+	case DatabaseRecordNotFound:
 		return http.StatusNotFound // 404
 
-	// ⚙️ 서버 에러 (Server Errors)
-	case ErrorServerFailed:
+	// ⚙️ 서버 에러 (Server Errs)
+	case ServerInternalError:
 		return http.StatusInternalServerError // 500
-	case ErrorServerTimeout:
+	case ServerTimeout:
 		return http.StatusGatewayTimeout // 504
-	case ErrorServerOverload:
+	case ServerOverload:
 		return http.StatusServiceUnavailable // 503
 
-	// 🌐 외부 서비스 에러 (External Service Errors)
-	case ErrorExternalServiceFailed:
+	// 🌐 외부 서비스 에러 (External Service Errs)
+	case ExternalServiceFailed:
 		return http.StatusBadGateway // 502
-	case ErrorExternalServiceTimeout:
+	case ExternalServiceTimeout:
 		return http.StatusGatewayTimeout // 504
-	case ErrorExternalServiceUnavailable:
+	case ExternalServiceUnavailable:
 		return http.StatusServiceUnavailable // 503
 
 	// 기본값: 알 수 없는 에러 식별자
