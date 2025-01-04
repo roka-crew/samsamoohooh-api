@@ -48,7 +48,7 @@ func (h *httperr) SetStatus(status int) *httperr {
 }
 
 func (h *httperr) SetDetail(format string, a ...any) *httperr {
-	h.detail = fmt.Sprintf(format, a)
+	h.detail = fmt.Sprintf(format, a...)
 	return h
 }
 
