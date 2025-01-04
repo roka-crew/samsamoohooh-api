@@ -24,3 +24,7 @@ func (d *duration) UnmarshalYAML(value *yaml.Node) error {
 	*d = duration(parsedDuration)
 	return nil
 }
+
+func (d *duration) Duration() time.Duration {
+	return time.Duration(*d)
+}
