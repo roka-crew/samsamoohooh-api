@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"errors"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type Kind string
 
@@ -17,21 +21,32 @@ const (
 )
 
 type Token struct {
-	// Expiration Time (만료시간)
-	Exp time.Time
-
-	// Issued At (발급시간)
-	Ita time.Time
-
-	// Not Before (토큰이 유효해지기 시작하는 시간)
-	Nbf time.Time
-
-	// Subject (토큰의 주체)
-	Sub int
+	jwt.RegisteredClaims
 
 	// Permission (권한)
-	Per Permission
+	Per Permission `json:"per"`
 
 	// Kind (토큰의 종류)
-	Kind Kind
+	Kind Kind `json:"kind"`
+
+	// 사용자의 ID
+	UserID int `json:"userID"`
+}
+
+func (t Token) Validate() error {
+	// 3. Validate token kind
+	switch t.Kind {
+	case KindAccess, KindRefresh:
+	default:
+		return errors.New("invalid token kind")
+	}
+
+	// 4. Validate permission
+	switch t.Per {
+	case PermissionStaff, PermissionUser:
+	default:
+		return errors.New("invalid permission")
+	}
+
+	return nil
 }
