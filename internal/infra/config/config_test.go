@@ -51,7 +51,7 @@ func TestNewConfig(t *testing.T) {
 	if config.Token.RefreshExp == 0 {
 		t.Error("Token.RefreshExp should not be zero")
 	}
-	if config.Token.SecretKey == "" {
+	if len(config.Token.SecretKey) == 0 {
 		t.Error("Token.SecretKey should not be empty")
 	}
 }
