@@ -2,7 +2,7 @@ package mysql
 
 import (
 	"fmt"
-	"samsamoohooh-api/internal/application/core/domain"
+	"samsamoohooh-api/internal/application/domain"
 	"samsamoohooh-api/internal/infra/config"
 
 	"gorm.io/driver/mysql"
