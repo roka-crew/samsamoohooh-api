@@ -13,7 +13,9 @@ type Validator struct {
 }
 
 func NewValidator() *Validator {
-	return &Validator{}
+	return &Validator{
+		engine: stdv.New(),
+	}
 }
 
 func (v *Validator) Validate(out any) error {
