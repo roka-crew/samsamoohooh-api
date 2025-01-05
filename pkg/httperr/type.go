@@ -27,11 +27,11 @@ const (
 
 	// 🗃️ 데이터베이스 에러 (Database Errs)
 	// 데이터베이스 오류 - 500 Internal Server Err
-	DatabaseFailed = "ERROR_DATABASE_FAILED"
+	DBFailed = "ERROR_DATABASE_FAILED"
 	// 중복 데이터 - 400 BadRequest
-	DatabaseDuplicateEntry = "ERROR_DATABASE_DUPLICATE_ENTRY"
+	DBDuplicateEntry = "ERROR_DATABASE_DUPLICATE_ENTRY"
 	// 데이터 없음 - 404 NotFound
-	DatabaseRecordNotFound = "ERROR_DATABASE_RECORD_NOT_FOUND"
+	DBRecordNotFound = "ERROR_DATABASE_RECORD_NOT_FOUND"
 
 	// ⚙️ 서버 에러 (Server Errs)
 	// 서버 오류 - 500 Internal Server Err
@@ -71,11 +71,11 @@ func statusOf(identifier string) int {
 	// 토큰 에러 (Token Errs)
 
 	// 🗃️ 데이터베이스 에러 (Database Errs)
-	case DatabaseFailed:
+	case DBFailed:
 		return http.StatusInternalServerError // 500
-	case DatabaseDuplicateEntry:
+	case DBDuplicateEntry:
 		return http.StatusBadRequest // 400
-	case DatabaseRecordNotFound:
+	case DBRecordNotFound:
 		return http.StatusNotFound // 404
 
 	// ⚙️ 서버 에러 (Server Errs)
