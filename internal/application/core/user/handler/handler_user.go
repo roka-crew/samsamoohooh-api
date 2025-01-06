@@ -43,3 +43,22 @@ func (h *UserHandler) FindUser(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(presenter.NewFindUserResponse(foundUser))
 }
+
+func (h *UserHandler) PatchUser(c *fiber.Ctx) error {
+	req, err := handlerutil.Bind[presenter.PatchUserRequest](c)
+	if err != nil {
+		return err
+	}
+
+	err = h.validator.Validate(req)
+	if err != nil {
+		return err
+	}
+
+	patchedUser, err := h.userService.PatchUser(c.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(presenter.NewFindUserResponse(patchedUser))
+}

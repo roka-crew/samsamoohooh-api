@@ -15,3 +15,15 @@ func NewFindUserResponse(user *domain.User) *FindUserResponse {
 		Provider:   user.Provider,
 	}
 }
+
+type PatchUserResponse struct {
+	Nickname   string  `json:"nickname,omitempty"`
+	Resolution *string `json:"resolution,omitempty"`
+}
+
+func NewPatchUserResponse(user *domain.User) *PatchUserResponse {
+	return &PatchUserResponse{
+		Nickname:   user.Nickname,
+		Resolution: user.Resolution,
+	}
+}
