@@ -96,6 +96,21 @@ func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersPa
 			SetDetail("failed list user")
 	}
 
-	return nil, nil
+	hasNext := len(listUsers) > params.Limit
+	if hasNext {
+		listUsers = listUsers[:params.Limit]
+	}
 
+	var nextCursor int
+	if hasNext {
+		nextCursor = params.Cursor + params.Limit
+	}
+
+	paginator := &domain.Paginator[domain.User]{
+		Items:      listUsers,
+		HasNext:    hasNext,
+		NextCursor: nextCursor,
+	}
+
+	return paginator, nil
 }
