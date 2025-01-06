@@ -8,7 +8,7 @@ import (
 
 type UserService interface {
 	FindUser(ctx context.Context, req *presenter.FoundUserRequest) (*domain.User, error)
-	PatchUser(ctx context.Context, req *presenter.PatchUserReqeust) (*domain.User, error)
+	PatchUser(ctx context.Context, req *presenter.PatchUserRequest) (*domain.User, error)
 }
 
 type UserStore interface {
