@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DetafultCtx = context.Background()
+var DefaultCtx = context.Background()
 var testcontainer testcontainers.Container
 
 func GetMysql(t *testing.T) *mysql.Mysql {
@@ -51,7 +51,7 @@ func GetValidator() *validator.Validator {
 	return validator.NewValidator()
 }
 
-func SetUp() error {
+func SetUp(ctx context.Context) error {
 	containerReq := testcontainers.ContainerRequest{
 		Image:        "mysql:8.0",
 		ExposedPorts: []string{"3306/tcp"},
@@ -67,7 +67,7 @@ func SetUp() error {
 		),
 	}
 
-	container, err := testcontainers.GenericContainer(DetafultCtx, testcontainers.GenericContainerRequest{
+	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: containerReq,
 		Started:          true,
 	})
@@ -79,6 +79,6 @@ func SetUp() error {
 	return nil
 }
 
-func Shutdwon() error {
-	return testcontainer.Terminate(DetafultCtx)
+func Shutdwon(ctx context.Context) error {
+	return testcontainer.Terminate(ctx)
 }
