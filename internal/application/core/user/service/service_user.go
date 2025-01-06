@@ -2,17 +2,17 @@ package service
 
 import (
 	"context"
-	"samsamoohooh-api/internal/application/core/user/store"
 	"samsamoohooh-api/internal/application/domain"
+	"samsamoohooh-api/internal/application/port"
 	"samsamoohooh-api/internal/application/presenter"
 )
 
 type UserService struct {
-	userStore store.UserStore
+	userStore port.UserStore
 }
 
 func NewUserService(
-	userStore store.UserStore,
+	userStore port.UserStore,
 ) *UserService {
 	return &UserService{
 		userStore: userStore,

@@ -2,19 +2,19 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"samsamoohooh-api/internal/application/core/user/service"
+	"samsamoohooh-api/internal/application/port"
 	"samsamoohooh-api/internal/application/presenter"
 	"samsamoohooh-api/internal/infra/utils/handlerutil"
 	"samsamoohooh-api/internal/infra/validator"
 )
 
 type UserHandler struct {
-	userService service.UserService
+	userService port.UserService
 	validator   validator.Validator
 }
 
 func NewUserHandler(
-	userService service.UserService,
+	userService port.UserService,
 	validator validator.Validator,
 ) *UserHandler {
 	userHandler := &UserHandler{
