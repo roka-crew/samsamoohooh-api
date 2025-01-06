@@ -1,28 +1,43 @@
 package handler
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"samsamoohooh-api/internal/application/port"
 	"samsamoohooh-api/internal/application/presenter"
+	"samsamoohooh-api/internal/infra/router"
 	"samsamoohooh-api/internal/infra/utils/handlerutil"
 	"samsamoohooh-api/internal/infra/validator"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type UserHandler struct {
 	userService port.UserService
-	validator   validator.Validator
+	validator   *validator.Validator
+	router      *router.Router
 }
 
 func NewUserHandler(
 	userService port.UserService,
-	validator validator.Validator,
+	validator *validator.Validator,
+	router *router.Router,
 ) *UserHandler {
 	userHandler := &UserHandler{
 		userService: userService,
 		validator:   validator,
+		router:      router,
 	}
 
+	userHandler.Route(router.V0)
+
 	return userHandler
+}
+
+func (h *UserHandler) Route(r fiber.Router) {
+	users := r.Group("/users")
+	{
+		users.Get("/:id", h.FindUser)
+		users.Patch("/:id", h.PatchUser)
+	}
 }
 
 func (h *UserHandler) FindUser(c *fiber.Ctx) error {
