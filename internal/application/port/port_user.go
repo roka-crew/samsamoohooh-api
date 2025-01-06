@@ -7,7 +7,7 @@ import (
 )
 
 type UserService interface {
-	FindUser(ctx context.Context, req *presenter.FoundUserRequest) (*domain.User, error)
+	FindUser(ctx context.Context, req *presenter.FindUserRequest) (*domain.User, error)
 	PatchUser(ctx context.Context, req *presenter.PatchUserRequest) (*domain.User, error)
 }
 
