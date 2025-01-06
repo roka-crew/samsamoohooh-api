@@ -15,11 +15,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	storetest.SetUp()
+	storetest.SetUp(storetest.DefaultCtx)
 
 	exitCode := m.Run()
 
-	storetest.Shutdwon()
+	storetest.Shutdwon(storetest.DefaultCtx)
 
 	os.Exit(exitCode)
 }
@@ -33,20 +33,13 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	tests := []struct {
-		name      string
-		expectErr bool
-		expected  *domain.User
+		name string
 		args
+		expected  *domain.User
+		expectErr bool
 	}{
 		{
-			name:      "[성공] 의도적으로 사용자를 생성한 경우",
-			expectErr: false,
-			expected: &domain.User{
-				ID:         1,
-				Nickname:   "홍길동",
-				Resolution: lo.ToPtr("저는 독서를 정말로 좋아합니다!"),
-				Provider:   "GOOGLE",
-			},
+			name: "[성공] 의도적으로 사용자를 생성한 경우",
 			args: args{
 				ctx: context.Background(),
 				params: &presenter.CreateUserParams{
@@ -55,12 +48,16 @@ func TestCreateUser(t *testing.T) {
 					Provider:   domain.Provider("GOOGLE"),
 				},
 			},
+			expected: &domain.User{
+				ID:         1,
+				Nickname:   "홍길동",
+				Resolution: lo.ToPtr("저는 독서를 정말로 좋아합니다!"),
+				Provider:   "GOOGLE",
+			},
 		},
 
 		{
-			name:      "[실패] 필수 값을 넣지 않은 경우",
-			expectErr: true,
-			expected:  nil,
+			name: "[실패] 필수 값을 넣지 않은 경우",
 			args: args{
 				ctx: context.Background(),
 				params: &presenter.CreateUserParams{
@@ -69,6 +66,8 @@ func TestCreateUser(t *testing.T) {
 					Provider:   "",
 				},
 			},
+			expected:  nil,
+			expectErr: true,
 		},
 	}
 
@@ -81,6 +80,70 @@ func TestCreateUser(t *testing.T) {
 
 			assert.Equalf(t, tt.expectErr, err != nil, "\nerr: %v", err)
 			assert.Equalf(t, tt.expected, ignoredCreatedUser, "\ntt.expected: %+v\nres: %+v", prettier.Pretty(tt.expected), prettier.Pretty(ignoredCreatedUser))
+		})
+	}
+}
+
+func TestFoundUser(t *testing.T) {
+	db := storetest.GetMysql(t)
+
+	// 사전 준비
+	var user = &domain.User{
+		Nickname: "July",
+		Provider: "APPLE",
+	}
+
+	t.Run("[사전 준비] 조회에 사용할 사용자들 생성", func(t *testing.T) {
+		err := db.
+			Create(user).
+			Error
+		assert.NoError(t, err)
+	})
+
+	// 테스트 케이스들
+	type args struct {
+		ctx    context.Context
+		params *presenter.FoundUserParams
+	}
+
+	tests := []struct {
+		name      string
+		expectErr bool
+		expected  *domain.User
+		args
+	}{
+		{
+			name: "[성공] id가 1인 사용자를 조회하는 경우",
+			args: args{
+				ctx: context.Background(),
+				params: &presenter.FoundUserParams{
+					ID: 1,
+				},
+			},
+			expected: user,
+		},
+		{
+			name: "[실패] id가 0인 사용자를 조회하는 경우",
+			args: args{
+				ctx: context.Background(),
+				params: &presenter.FoundUserParams{
+					ID: 0,
+				},
+			},
+			expected:  nil,
+			expectErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userStore := NewUserStore(db, storetest.GetValidator())
+
+			res, err := userStore.FoundUser(tt.ctx, tt.params)
+
+			assert.Equalf(t, tt.expectErr, err != nil, "\ntt.expectErr = %+v\nerr = %+v", tt.expectErr, err)
+			assert.Equalf(t, tt.expected, res, "\ntt.expected: %+v\nres: %+v", prettier.Pretty(tt.expected), prettier.Pretty(res))
+
 		})
 	}
 }
