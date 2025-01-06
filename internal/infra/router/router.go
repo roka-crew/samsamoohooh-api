@@ -11,7 +11,9 @@ import (
 )
 
 type Router struct {
-	*fiber.App
+	app *fiber.App
+	API fiber.Router
+	V0  fiber.Router
 
 	config *config.Config
 }
@@ -26,9 +28,15 @@ func NewRouter(
 		return c.SendString("pong")
 	})
 
+	api := app.Group("/api")
+	v0 := api.Group("/v0")
+
 	return Router{
+		app: app,
+		API: api,
+		V0:  v0,
+
 		config: config,
-		App:    app,
 	}.serve(lc)
 }
 
@@ -44,7 +52,7 @@ func (r Router) serve(lc fx.Lifecycle) *Router {
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			if err := r.Shutdown(); err != nil {
+			if err := r.app.Shutdown(); err != nil {
 				return fmt.Errorf("error shutting down server: %v", err)
 			}
 
@@ -56,5 +64,5 @@ func (r Router) serve(lc fx.Lifecycle) *Router {
 }
 
 func (r *Router) listen() error {
-	return r.App.Listen(r.config.Server.Addr)
+	return r.app.Listen(r.config.Server.Addr)
 }
