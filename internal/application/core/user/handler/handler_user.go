@@ -3,9 +3,9 @@ package handler
 import (
 	"samsamoohooh-api/internal/application/port"
 	"samsamoohooh-api/internal/application/presenter"
-	"samsamoohooh-api/internal/infra/router"
 	"samsamoohooh-api/internal/infra/utils/handlerutil"
 	"samsamoohooh-api/internal/infra/validator"
+	"samsamoohooh-api/internal/router"
 
 	"github.com/gofiber/fiber/v2"
 )
