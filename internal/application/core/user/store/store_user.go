@@ -150,3 +150,27 @@ func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserPa
 
 	return patchUser, nil
 }
+
+func (s *UserStore) DeleteUser(ctx context.Context, params *presenter.DeleteUserParams) error {
+	err := s.validator.ValidateParams(params)
+	if err != nil {
+		return err
+	}
+
+	var deleteUser = &domain.User{ID: params.ID}
+	res := s.db.WithContext(ctx).
+		Delete(&deleteUser)
+	if res.RowsAffected == 0 {
+		return httperr.New().
+			SetType(httperr.DBDeleteNotApplied).
+			SetDetail("delete operation did not affect any records")
+	}
+
+	if res.Error != nil {
+		return httperr.New(res.Error).
+			SetType(httperr.DBFailed).
+			SetDetail("failed delete user")
+	}
+
+	return nil
+}
