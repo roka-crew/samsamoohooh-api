@@ -65,7 +65,7 @@ func (s *UserStore) FindUser(ctx context.Context, params *presenter.FoundUserPar
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, httperr.New(err).
-			SetType(httperr.DBRecordNotFound).
+			SetType(httperr.DBNotFound).
 			SetDetail("failed retrieve %d user", params.ID)
 	}
 
@@ -113,4 +113,40 @@ func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersPa
 	}
 
 	return paginator, nil
+}
+
+func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserParams) (*domain.User, error) {
+	err := s.validator.ValidateParams(params)
+	if err != nil {
+		return nil, err
+	}
+
+	var patchUser = &domain.User{}
+	if params.Nickname != nil {
+		patchUser.Nickname = *params.Nickname
+	}
+	if params.Resolution != nil {
+		patchUser.Resolution = params.Resolution
+	}
+	if params.Provider != nil {
+		patchUser.Provider = *params.Provider
+	}
+
+	res := s.db.WithContext(ctx).
+		Model(&domain.User{ID: params.ID}).
+		Updates(patchUser)
+
+	if res.RowsAffected == 0 {
+		return nil, httperr.New().
+			SetType(httperr.DBUpdateNotApplied).
+			SetDetail("update operation did not affect any records")
+	}
+
+	if res.Error != nil {
+		return nil, httperr.New(res.Error).
+			SetType(httperr.DBFailed).
+			SetDetail("failed update user")
+	}
+
+	return patchUser, nil
 }
