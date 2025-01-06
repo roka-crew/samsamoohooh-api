@@ -51,7 +51,7 @@ func (s *UserStore) CreateUser(ctx context.Context, params *presenter.CreateUser
 	return createUser, nil
 }
 
-func (s *UserStore) FoundUser(ctx context.Context, params *presenter.FoundUserParams) (*domain.User, error) {
+func (s *UserStore) FindUser(ctx context.Context, params *presenter.FoundUserParams) (*domain.User, error) {
 	err := s.validator.ValidateParams(params)
 	if err != nil {
 		return nil, err
@@ -76,4 +76,26 @@ func (s *UserStore) FoundUser(ctx context.Context, params *presenter.FoundUserPa
 	}
 
 	return foundUser, nil
+}
+
+func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersParams) (*domain.Paginator[domain.User], error) {
+	err := s.validator.ValidateParams(params)
+	if err != nil {
+		return nil, err
+	}
+
+	var listUsers []domain.User
+	err = s.db.WithContext(ctx).
+		Where("id >= ?", params.Cursor).
+		Limit(params.Limit + 1).
+		Find(&listUsers).
+		Error
+	if err != nil {
+		return nil, httperr.New(err).
+			SetType(httperr.DBFailed).
+			SetDetail("failed list user")
+	}
+
+	return nil, nil
+
 }

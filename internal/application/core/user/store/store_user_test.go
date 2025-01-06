@@ -15,11 +15,17 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	storetest.SetUp(storetest.DefaultCtx)
+	err := storetest.SetUp(storetest.DefaultCtx)
+	if err != nil {
+		panic(err)
+	}
 
 	exitCode := m.Run()
 
-	storetest.Shutdwon(storetest.DefaultCtx)
+	err = storetest.Shutdwon(storetest.DefaultCtx)
+	if err != nil {
+		panic(err)
+	}
 
 	os.Exit(exitCode)
 }
@@ -55,6 +61,18 @@ func TestCreateUser(t *testing.T) {
 				Provider:   "GOOGLE",
 			},
 		},
+		{
+			name: "[실패] not null 제약조건 위배",
+			args: args{
+				ctx: context.Background(),
+				params: &presenter.CreateUserParams{
+					Nickname: "",
+					Provider: "",
+				},
+			},
+			expected:  nil,
+			expectErr: true,
+		},
 
 		{
 			name: "[실패] 필수 값을 넣지 않은 경우",
@@ -84,7 +102,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestFoundUser(t *testing.T) {
+func TestFindUser(t *testing.T) {
 	db := storetest.GetMysql(t)
 
 	// 사전 준비
@@ -139,7 +157,7 @@ func TestFoundUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			userStore := NewUserStore(db, storetest.GetValidator())
 
-			res, err := userStore.FoundUser(tt.ctx, tt.params)
+			res, err := userStore.FindUser(tt.ctx, tt.params)
 
 			assert.Equalf(t, tt.expectErr, err != nil, "\ntt.expectErr = %+v\nerr = %+v", tt.expectErr, err)
 			assert.Equalf(t, tt.expected, res, "\ntt.expected: %+v\nres: %+v", prettier.Pretty(tt.expected), prettier.Pretty(res))
