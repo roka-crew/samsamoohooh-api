@@ -1,10 +1,10 @@
 package presenter
 
-type FoundUserRequest struct {
+type FindUserRequest struct {
 	ID int `params:"id" validate:"required,gte=1"`
 }
 
-func (r FoundUserRequest) ToParams() *FoundUserParams {
+func (r FindUserRequest) ToParams() *FoundUserParams {
 	return &FoundUserParams{
 		ID: r.ID,
 	}

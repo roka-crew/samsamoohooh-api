@@ -19,7 +19,7 @@ func NewUserService(
 	}
 }
 
-func (s *UserService) FindUser(ctx context.Context, req *presenter.FoundUserRequest) (*domain.User, error) {
+func (s *UserService) FindUser(ctx context.Context, req *presenter.FindUserRequest) (*domain.User, error) {
 	foundUser, err := s.userStore.FindUser(ctx, req.ToParams())
 	if err != nil {
 		return nil, err
