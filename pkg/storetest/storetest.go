@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"samsamoohooh-api/internal/infra/persistence/mysql"
-	"samsamoohooh-api/internal/infra/validator"
 	"testing"
 
 	"github.com/testcontainers/testcontainers-go"
@@ -45,10 +44,6 @@ func GetMysql(t *testing.T) *mysql.Mysql {
 	}
 
 	return mysql
-}
-
-func GetValidator() *validator.Validator {
-	return validator.NewValidator()
 }
 
 func SetUp(ctx context.Context) error {

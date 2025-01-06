@@ -5,8 +5,9 @@ import (
 	"os"
 	"samsamoohooh-api/internal/application/domain"
 	"samsamoohooh-api/internal/application/presenter"
-	"samsamoohooh-api/internal/infra/storetest"
+	"samsamoohooh-api/internal/infra/validator"
 	"samsamoohooh-api/pkg/prettier"
+	"samsamoohooh-api/pkg/storetest"
 	"samsamoohooh-api/pkg/testutil"
 	"testing"
 
@@ -91,7 +92,7 @@ func TestCreateUser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			userStore := NewUserStore(db, storetest.GetValidator())
+			userStore := NewUserStore(db, validator.NewValidator())
 
 			createdUser, err := userStore.CreateUser(tt.ctx, tt.params)
 			ignoredCreatedUser := testutil.IgnoreFields(createdUser, "CreatedAt", "UpdatedAt")
@@ -153,7 +154,7 @@ func TestFindUser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			userStore := NewUserStore(db, storetest.GetValidator())
+			userStore := NewUserStore(db, validator.NewValidator())
 
 			res, err := userStore.FindUser(tt.ctx, tt.params)
 
@@ -267,7 +268,7 @@ func TestListUsers(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			userStore := NewUserStore(db, storetest.GetValidator())
+			userStore := NewUserStore(db, validator.NewValidator())
 
 			res, err := userStore.ListUsers(tt.args.ctx, tt.args.params)
 
