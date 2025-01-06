@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Server struct {
-		Listen string `yaml:"listen"`
+		Addr string `yaml:"addr"`
 	} `yaml:"server"`
 
 	Mysql struct {

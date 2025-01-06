@@ -12,8 +12,8 @@ func TestNewConfig(t *testing.T) {
 	}
 
 	// Server 설정 체크
-	if config.Server.Listen == "" {
-		t.Error("Server.Listen should not be empty")
+	if config.Server.Addr == "" {
+		t.Error("Server.Addr should not be empty")
 	}
 
 	// MySQL 설정 체크
