@@ -3,6 +3,8 @@ package testutil
 import "reflect"
 
 func IgnoreFields[T any](v T, ignoreFields ...string) T {
+	// THINK: https://github.com/google/go-cmp 이걸로 ignore 할 수 있음 !
+
 	// Convert ignoreFields to map for O(1) lookup
 	ignoreMap := make(map[string]bool)
 	for _, field := range ignoreFields {
