@@ -3,27 +3,26 @@ package handler
 import (
 	"samsamoohooh-api/internal/application/port"
 	"samsamoohooh-api/internal/application/presenter"
-	"samsamoohooh-api/internal/infra/validator"
+	"samsamoohooh-api/internal/infra/handlerutil"
 	"samsamoohooh-api/internal/router"
-	"samsamoohooh-api/pkg/handlerutil"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type UserHandler struct {
 	userService port.UserService
-	validator   *validator.Validator
+	handlerUtil *handlerutil.HandlerUtil
 	router      *router.Router
 }
 
 func NewUserHandler(
 	userService port.UserService,
-	validator *validator.Validator,
+	handlerUtil *handlerutil.HandlerUtil,
 	router *router.Router,
 ) *UserHandler {
 	userHandler := &UserHandler{
 		userService: userService,
-		validator:   validator,
+		handlerUtil: handlerUtil,
 		router:      router,
 	}
 
@@ -41,14 +40,9 @@ func (h *UserHandler) Route(r fiber.Router) {
 }
 
 func (h *UserHandler) FindUser(c *fiber.Ctx) error {
-	req, err := handlerutil.Bind[presenter.FindUserRequest](c)
-	if err != nil {
-		return err
-	}
-
-	err = h.validator.Validate(req)
-	if err != nil {
-		return err
+	var req = &presenter.FindUserRequest{}
+	if err := h.handlerUtil.Bind(c, req); err != nil {
+		return nil
 	}
 
 	foundUser, err := h.userService.FindUser(c.Context(), req)
@@ -60,13 +54,8 @@ func (h *UserHandler) FindUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) PatchUser(c *fiber.Ctx) error {
-	req, err := handlerutil.Bind[presenter.PatchUserRequest](c)
-	if err != nil {
-		return err
-	}
-
-	err = h.validator.Validate(req)
-	if err != nil {
+	var req = &presenter.PatchUserRequest{}
+	if err := h.handlerUtil.Bind(c, req); err != nil {
 		return err
 	}
 

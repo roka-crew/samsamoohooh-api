@@ -22,7 +22,9 @@ func NewRouter(
 	lc fx.Lifecycle,
 	config *config.Config,
 ) *Router {
-	app := fiber.New(fiber.Config{})
+	app := fiber.New(fiber.Config{
+		ErrorHandler: ErrorHandler,
+	})
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("pong")

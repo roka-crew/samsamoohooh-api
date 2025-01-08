@@ -4,6 +4,7 @@ import (
 	"samsamoohooh-api/internal/application/port"
 	"samsamoohooh-api/internal/infra/authenticate/token"
 	"samsamoohooh-api/internal/infra/config"
+	"samsamoohooh-api/internal/infra/handlerutil"
 	"samsamoohooh-api/internal/infra/persistence/mysql"
 	"samsamoohooh-api/internal/infra/validator"
 
@@ -15,6 +16,7 @@ var Module = fx.Module(
 	fx.Provide(
 		config.NewConfig,
 		validator.NewValidator,
+		handlerutil.NewHandlerUtil,
 		mysql.NewMysql,
 		fx.Annotate(
 			token.NewTokenService,
