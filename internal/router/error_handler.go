@@ -8,6 +8,7 @@ import (
 
 var ErrorHandler = func(c *fiber.Ctx, err error) error {
 	if castedHttperr, ok := httperr.Cast(err); ok {
+		castedHttperr.SetInstance(c.Path())
 		return c.Status(castedHttperr.Status()).SendString(castedHttperr.Error())
 	}
 
