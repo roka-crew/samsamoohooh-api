@@ -174,3 +174,26 @@ func (s *UserStore) DeleteUser(ctx context.Context, params *presenter.DeleteUser
 
 	return nil
 }
+
+func (s *UserStore) GetUserGroups(ctx context.Context, params *presenter.GetUserGroupsParams) ([]domain.Group, error) {
+	err := s.validator.ValidateParams(params)
+	if err != nil {
+		return nil, err
+	}
+
+	var foundGroups []domain.Group
+	err = s.db.
+		WithContext(ctx).
+		Model(&domain.User{}).
+		Limit(params.Limit).
+		Offset(params.Offset).
+		Association("Groups").
+		Find(&foundGroups)
+	if err != nil {
+		return nil, httperr.New(err).
+			SetType(httperr.DBFailed).
+			SetDetail("failed get groups")
+	}
+
+	return foundGroups, nil
+}

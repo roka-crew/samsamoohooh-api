@@ -17,4 +17,6 @@ type UserStore interface {
 	ListUsers(ctx context.Context, params *presenter.ListUsersParams) (*domain.Paginator[domain.User], error)
 	PatchUser(ctx context.Context, params *presenter.PatchUserParams) (*domain.User, error)
 	DeleteUser(ctx context.Context, params *presenter.DeleteUserParams) error
+
+	GetUserGroups(ctx context.Context, params *presenter.GetUserGroupsParams) ([]domain.Group, error)
 }

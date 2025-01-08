@@ -27,3 +27,9 @@ type PatchUserParams struct {
 type DeleteUserParams struct {
 	ID int `validate:"required,gte=1"`
 }
+
+type GetUserGroupsParams struct {
+	UserID int `validate:"required,gte=1"`
+	Offset int `validate:"required,gte=1"`
+	Limit  int `validate:"required,gte=0,lte=50"`
+}
