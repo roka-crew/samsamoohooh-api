@@ -17,7 +17,7 @@ type httperr struct {
 
 func (h *httperr) Error() string {
 	if h.type_ != "" && h.status == 0 {
-		h.status = statusOf(h.type_)
+		h.status = searchStatus(h.type_)
 	}
 
 	jsonData, err := json.Marshal(h)
@@ -39,12 +39,17 @@ func New(err ...error) *httperr {
 
 func (h *httperr) SetType(type_ string) *httperr {
 	h.type_ = type_
+	h.status = searchStatus(h.type_)
 	return h
 }
 
 func (h *httperr) SetStatus(status int) *httperr {
 	h.status = status
 	return h
+}
+
+func (h *httperr) Status() int {
+	return h.status
 }
 
 func (h *httperr) SetDetail(format string, a ...any) *httperr {
@@ -82,7 +87,7 @@ func (h *httperr) Cause() error {
 	return h.cause
 }
 
-func As(err error) (*httperr, bool) {
+func Cast(err error) (*httperr, bool) {
 	if err == nil {
 		return nil, false
 	}
@@ -90,6 +95,5 @@ func As(err error) (*httperr, bool) {
 	if httpErr, ok := err.(*httperr); ok {
 		return httpErr, true
 	}
-
 	return nil, false
 }

@@ -52,8 +52,8 @@ const (
 	ExternalServiceUnavailable = "ERROR_EXTERNAL_SERVICE_UNAVAILABLE"
 )
 
-func statusOf(identifier string) int {
-	switch identifier {
+func searchStatus(type_ string) int {
+	switch type_ {
 	// 📝 요청 관련 에러 (Request Errs)
 	case RequestParsingFailed:
 		return http.StatusBadRequest // 400
