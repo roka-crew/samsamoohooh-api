@@ -6,7 +6,7 @@ type FindUserRequest struct {
 
 func (r FindUserRequest) ToParams() *FoundUserParams {
 	return &FoundUserParams{
-		ID: r.ID,
+		UserID: r.ID,
 	}
 }
 
@@ -18,7 +18,7 @@ type PatchUserRequest struct {
 
 func (r PatchUserRequest) ToParams() *PatchUserParams {
 	return &PatchUserParams{
-		ID:         r.ID,
+		UserID:     r.ID,
 		Nickname:   r.Nickname,
 		Resolution: r.Resolution,
 	}

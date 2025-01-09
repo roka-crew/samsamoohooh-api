@@ -14,7 +14,7 @@ type UserService interface {
 type UserStore interface {
 	CreateUser(ctx context.Context, params *presenter.CreateUserParams) (*domain.User, error)
 	FindUser(ctx context.Context, params *presenter.FoundUserParams) (*domain.User, error)
-	ListUsers(ctx context.Context, params *presenter.ListUsersParams) (*domain.Paginator[domain.User], error)
+	ListUsers(ctx context.Context, params *presenter.ListUsersParams) ([]domain.User, error)
 	PatchUser(ctx context.Context, params *presenter.PatchUserParams) (*domain.User, error)
 	DeleteUser(ctx context.Context, params *presenter.DeleteUserParams) error
 
