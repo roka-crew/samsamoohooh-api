@@ -114,7 +114,7 @@ func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserPa
 
 	db := s.db.WithContext(ctx)
 
-	var patchUser = &domain.User{}
+	var patchUser = &domain.User{ID: params.UserID}
 	if params.Nickname != nil {
 		patchUser.Nickname = *params.Nickname
 	}
@@ -126,7 +126,6 @@ func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserPa
 	}
 
 	res := db.
-		Model(&domain.User{ID: params.UserID}).
 		Updates(patchUser)
 
 	if res.RowsAffected == 0 {
@@ -183,12 +182,12 @@ func (s *UserStore) GetUserGroups(ctx context.Context, params *presenter.GetUser
 		db = db.Offset(*params.Offset)
 	}
 
-	var foundGroups []domain.Group
+	var getGroups []domain.Group
 	err = db.
 		Model(&domain.User{ID: params.UserID}).
 		Limit(params.Limit).
 		Association("Groups").
-		Find(&foundGroups)
+		Find(&getGroups)
 
 	if err != nil {
 		return nil, httperr.New(err).
@@ -196,7 +195,7 @@ func (s *UserStore) GetUserGroups(ctx context.Context, params *presenter.GetUser
 			SetDetail("failed get groups")
 	}
 
-	return foundGroups, nil
+	return getGroups, nil
 }
 
 func (s *UserStore) GetUserTopics(ctx context.Context, params *presenter.GetUserTopicsParams) ([]domain.Topic, error) {
@@ -211,12 +210,12 @@ func (s *UserStore) GetUserTopics(ctx context.Context, params *presenter.GetUser
 		db = db.Offset(*params.Offset)
 	}
 
-	var foundTopics []domain.Topic
+	var getTopics []domain.Topic
 	err = db.
 		Model(&domain.User{ID: params.UserID}).
 		Limit(params.Limit).
 		Association("Topics").
-		Find(&foundTopics)
+		Find(&getTopics)
 
 	if err != nil {
 		return nil, httperr.New(err).
@@ -224,5 +223,5 @@ func (s *UserStore) GetUserTopics(ctx context.Context, params *presenter.GetUser
 			SetDetail("failed get topics")
 	}
 
-	return foundTopics, nil
+	return getTopics, nil
 }
