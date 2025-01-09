@@ -33,13 +33,14 @@ func (s *UserStore) CreateUser(ctx context.Context, params *presenter.CreateUser
 		return nil, err
 	}
 
+	db := s.db.WithContext(ctx)
+
 	var createUser = &domain.User{
 		Nickname:   params.Nickname,
 		Resolution: params.Resolution,
 		Provider:   params.Provider,
 	}
-	err = s.db.
-		WithContext(ctx).
+	err = db.
 		Create(createUser).
 		Error
 	if err != nil {
@@ -57,37 +58,43 @@ func (s *UserStore) FindUser(ctx context.Context, params *presenter.FoundUserPar
 		return nil, err
 	}
 
+	db := s.db.WithContext(ctx)
+
 	var foundUser = &domain.User{}
-	err = s.db.
-		WithContext(ctx).
-		First(foundUser, params.ID).
+	err = db.
+		First(foundUser, params.UserID).
 		Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, httperr.New(err).
 			SetType(httperr.DBNotFound).
-			SetDetail("failed retrieve %d user", params.ID)
+			SetDetail("failed retrieve %d user", params.UserID)
 	}
 
 	if err != nil {
 		return nil, httperr.New(err).
 			SetType(httperr.DBFailed).
-			SetDetail("failed retrieve %d user", params.ID)
+			SetDetail("failed retrieve %d user", params.UserID)
 	}
 
 	return foundUser, nil
 }
 
-func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersParams) (*domain.Paginator[domain.User], error) {
+func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersParams) ([]domain.User, error) {
 	err := s.validator.ValidateParams(params)
 	if err != nil {
 		return nil, err
 	}
 
+	db := s.db.WithContext(ctx)
+
+	if params.Offset != nil {
+		db = db.Offset(*params.Offset)
+	}
+
 	var listUsers []domain.User
-	err = s.db.WithContext(ctx).
-		Where("id >= ?", params.Cursor).
-		Limit(params.Limit + 1).
+	err = db.
+		Limit(params.Limit).
 		Find(&listUsers).
 		Error
 	if err != nil {
@@ -96,23 +103,7 @@ func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersPa
 			SetDetail("failed list user")
 	}
 
-	hasNext := len(listUsers) > params.Limit
-	if hasNext {
-		listUsers = listUsers[:params.Limit]
-	}
-
-	var nextCursor int
-	if hasNext {
-		nextCursor = params.Cursor + params.Limit
-	}
-
-	paginator := &domain.Paginator[domain.User]{
-		Items:      listUsers,
-		HasNext:    hasNext,
-		NextCursor: nextCursor,
-	}
-
-	return paginator, nil
+	return listUsers, nil
 }
 
 func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserParams) (*domain.User, error) {
@@ -120,6 +111,8 @@ func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserPa
 	if err != nil {
 		return nil, err
 	}
+
+	db := s.db.WithContext(ctx)
 
 	var patchUser = &domain.User{}
 	if params.Nickname != nil {
@@ -132,8 +125,8 @@ func (s *UserStore) PatchUser(ctx context.Context, params *presenter.PatchUserPa
 		patchUser.Provider = *params.Provider
 	}
 
-	res := s.db.WithContext(ctx).
-		Model(&domain.User{ID: params.ID}).
+	res := db.
+		Model(&domain.User{ID: params.UserID}).
 		Updates(patchUser)
 
 	if res.RowsAffected == 0 {
@@ -157,9 +150,12 @@ func (s *UserStore) DeleteUser(ctx context.Context, params *presenter.DeleteUser
 		return err
 	}
 
-	var deleteUser = &domain.User{ID: params.ID}
-	res := s.db.WithContext(ctx).
+	db := s.db.WithContext(ctx)
+
+	var deleteUser = &domain.User{ID: params.UserID}
+	res := db.
 		Delete(&deleteUser)
+
 	if res.RowsAffected == 0 {
 		return httperr.New().
 			SetType(httperr.DBDeleteNotApplied).
@@ -181,14 +177,19 @@ func (s *UserStore) GetUserGroups(ctx context.Context, params *presenter.GetUser
 		return nil, err
 	}
 
+	db := s.db.WithContext(ctx)
+
+	if params.Offset != nil {
+		db = db.Offset(*params.Offset)
+	}
+
 	var foundGroups []domain.Group
-	err = s.db.
-		WithContext(ctx).
-		Model(&domain.User{}).
+	err = db.
+		Model(&domain.User{ID: params.UserID}).
 		Limit(params.Limit).
-		Offset(params.Offset).
 		Association("Groups").
 		Find(&foundGroups)
+
 	if err != nil {
 		return nil, httperr.New(err).
 			SetType(httperr.DBFailed).
@@ -204,13 +205,19 @@ func (s *UserStore) GetUserTopics(ctx context.Context, params *presenter.GetUser
 		return nil, err
 	}
 
+	db := s.db.WithContext(ctx)
+
+	if params.Offset != nil {
+		db = db.Offset(*params.Offset)
+	}
+
 	var foundTopics []domain.Topic
-	err = s.db.WithContext(ctx).
-		Model(&domain.User{}).
+	err = db.
+		Model(&domain.User{ID: params.UserID}).
 		Limit(params.Limit).
-		Offset(params.Offset).
 		Association("Topics").
 		Find(&foundTopics)
+
 	if err != nil {
 		return nil, httperr.New(err).
 			SetType(httperr.DBFailed).
