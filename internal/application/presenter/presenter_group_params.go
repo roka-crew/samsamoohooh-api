@@ -13,8 +13,8 @@ type FindGroupParams struct {
 }
 
 type ListGroupsParams struct {
-	Offset int `validate:"omitempty,gte=0"`
-	Limit  int `validate:"required,gte=0"`
+	Offset *int `validate:"omitempty,gte=0"`
+	Limit  int  `validate:"required,gte=0"`
 }
 
 type PatchGroupParams struct {
