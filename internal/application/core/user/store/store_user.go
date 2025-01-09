@@ -60,9 +60,9 @@ func (s *UserStore) FindUser(ctx context.Context, params *presenter.FoundUserPar
 
 	db := s.db.WithContext(ctx)
 
-	var foundUser = &domain.User{}
+	var findUser = &domain.User{}
 	err = db.
-		First(foundUser, params.UserID).
+		First(findUser, params.UserID).
 		Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -77,7 +77,7 @@ func (s *UserStore) FindUser(ctx context.Context, params *presenter.FoundUserPar
 			SetDetail("failed retrieve %d user", params.UserID)
 	}
 
-	return foundUser, nil
+	return findUser, nil
 }
 
 func (s *UserStore) ListUsers(ctx context.Context, params *presenter.ListUsersParams) ([]domain.User, error) {
