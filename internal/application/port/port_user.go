@@ -19,4 +19,5 @@ type UserStore interface {
 	DeleteUser(ctx context.Context, params *presenter.DeleteUserParams) error
 
 	GetUserGroups(ctx context.Context, params *presenter.GetUserGroupsParams) ([]domain.Group, error)
+	GetUserTopics(ctx context.Context, params *presenter.GetUserTopicsParams) ([]domain.Topic, error)
 }

@@ -33,3 +33,9 @@ type GetUserGroupsParams struct {
 	Offset int `validate:"required,gte=1"`
 	Limit  int `validate:"required,gte=0,lte=50"`
 }
+
+type GetUserTopicsParams struct {
+	UserID int `validate:"required,gte=1"`
+	Offset int `validate:"required,gte=1"`
+	Limit  int `validate:"required,gte=0,lte=50"`
+}

@@ -197,3 +197,25 @@ func (s *UserStore) GetUserGroups(ctx context.Context, params *presenter.GetUser
 
 	return foundGroups, nil
 }
+
+func (s *UserStore) GetUserTopics(ctx context.Context, params *presenter.GetUserTopicsParams) ([]domain.Topic, error) {
+	err := s.validator.Validate(params)
+	if err != nil {
+		return nil, err
+	}
+
+	var foundTopics []domain.Topic
+	err = s.db.WithContext(ctx).
+		Model(&domain.User{}).
+		Limit(params.Limit).
+		Offset(params.Offset).
+		Association("Topics").
+		Find(&foundTopics)
+	if err != nil {
+		return nil, httperr.New(err).
+			SetType(httperr.DBFailed).
+			SetDetail("failed get topics")
+	}
+
+	return foundTopics, nil
+}
