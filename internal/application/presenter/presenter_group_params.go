@@ -36,6 +36,11 @@ type GetGroupUsersParams struct {
 	Limit   int  `validte:"required,gte=1"`
 }
 
+type AddGroupUserParams struct {
+	GroupID int `validate:"required,gte=1"`
+	UserID  int `validate:"required,gte=1"`
+}
+
 type GetGroupGoalsParams struct {
 	GroupID int  `validate:"required,gte=1"`
 	Offset  *int `validate:"omitempty,gte=0"`
