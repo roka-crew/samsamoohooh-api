@@ -210,6 +210,56 @@ func (s *GroupStore) GetGroupUsers(ctx context.Context, params *presenter.GetGro
 	return getUsers, nil
 }
 
+func (s *GroupStore) AddGroupUser(ctx context.Context, params *presenter.AddGroupUserParams) error {
+	err := s.validator.ValidateParams(params)
+	if err != nil {
+		return err
+	}
+
+	db := s.db.WithContext(ctx)
+
+	var findGroup = &domain.Group{}
+	err = db.
+		First(findGroup, params.GroupID).
+		Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return httperr.New(err).
+			SetType(httperr.DBNotFound).
+			SetDetail("not found group")
+	}
+	if err != nil {
+		return httperr.New(err).
+			SetType(httperr.DBFailed)
+	}
+
+	var findUser = &domain.User{}
+	err = db.
+		First(findUser, params.UserID).
+		Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return httperr.New(err).
+			SetType(httperr.DBNotFound).
+			SetDetail("not found user, check user id")
+	}
+
+	if err != nil {
+		return httperr.New(err).
+			SetType(httperr.DBFailed)
+	}
+
+	err = db.
+		Model(findGroup).
+		Association("Users").
+		Append(&findUser)
+	if err != nil {
+		return httperr.New(err).
+			SetType(httperr.DBFailed).
+			SetDetail("not append relation")
+	}
+
+	return nil
+}
+
 func (s *GroupStore) GetGoals(ctx context.Context, params *presenter.GetGroupGoalsParams) ([]domain.Goal, error) {
 	err := s.validator.ValidateParams(params)
 	if err != nil {

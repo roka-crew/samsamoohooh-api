@@ -17,5 +17,6 @@ type GroupStore interface {
 	DeleteGroup(ctx context.Context, params *presenter.DeleteGroupParams) error
 
 	GetGroupUsers(ctx context.Context, params *presenter.GetGroupUsersParams) ([]domain.User, error)
+	AddGroupUser(ctx context.Context, params *presenter.AddGroupUserParams) error
 	GetGoals(ctx context.Context, params *presenter.GetGroupGoalsParams) ([]domain.Goal, error)
 }
