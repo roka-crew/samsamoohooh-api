@@ -1,0 +1,81 @@
+definitions:
+  domain.Provider:
+    enum:
+    - GOOGLE
+    - APPLE
+    - KAKAO
+    type: string
+    x-enum-varnames:
+    - ProviderGoogle
+    - ProviderApple
+    - ProviderKakao
+  presenter.FindUserResponse:
+    properties:
+      nickname:
+        type: string
+      provider:
+        $ref: '#/definitions/domain.Provider'
+      resolution:
+        type: string
+    type: object
+  presenter.PatchUserRequest:
+    properties:
+      nickname:
+        maxLength: 12
+        minLength: 3
+        type: string
+      resolution:
+        maxLength: 18
+        minLength: 0
+        type: string
+    type: object
+  presenter.PatchUserResponse:
+    properties:
+      nickname:
+        type: string
+      resolution:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/users/{id}:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.FindUserResponse'
+      tags:
+      - users
+    patch:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: PATCH USER REQUEST
+        in: body
+        name: PatchUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.PatchUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.PatchUserResponse'
+      tags:
+      - users
+swagger: "2.0"

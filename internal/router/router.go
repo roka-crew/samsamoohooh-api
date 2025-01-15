@@ -7,15 +7,15 @@ import (
 	"samsamoohooh-api/internal/infra/config"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"go.uber.org/fx"
 )
 
 type Router struct {
 	app *fiber.App
-	API fiber.Router
-	V0  fiber.Router
 
-	config *config.Config
+	ApiRouter fiber.Router
+	config    *config.Config
 }
 
 func NewRouter(
@@ -26,19 +26,16 @@ func NewRouter(
 		ErrorHandler: ErrorHandler,
 	})
 
+	app.Get("/swagger/*", swagger.HandlerDefault) // default
+
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("pong")
 	})
 
-	api := app.Group("/api")
-	v0 := api.Group("/v0")
-
 	return Router{
-		app: app,
-		API: api,
-		V0:  v0,
-
-		config: config,
+		app:       app,
+		config:    config,
+		ApiRouter: app.Group("/api"),
 	}.serve(lc)
 }
 

@@ -11,7 +11,7 @@ func (r FindUserRequest) ToParams() *FoundUserParams {
 }
 
 type PatchUserRequest struct {
-	ID         int     `params:"id"       validate:"required,gte=1"`
+	ID         int     `params:"id"       validate:"required,gte=1" swaggerignore:"true"`
 	Nickname   *string `json:"nickname"   validate:"omitempty,min=3,max=12"`
 	Resolution *string `json:"resolution" validate:"omitempty,min=0,max=18"`
 }

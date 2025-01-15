@@ -6,6 +6,8 @@ import (
 	"samsamoohooh-api/internal/router"
 
 	"go.uber.org/fx"
+
+	_ "samsamoohooh-api/docs/swagger"
 )
 
 func main() {

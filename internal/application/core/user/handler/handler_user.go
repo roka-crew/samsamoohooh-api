@@ -26,19 +26,25 @@ func NewUserHandler(
 		router:      router,
 	}
 
-	userHandler.Route(router.V0)
+	userHandler.Route()
 
 	return userHandler
 }
 
-func (h *UserHandler) Route(r fiber.Router) {
-	users := r.Group("/users")
+func (h *UserHandler) Route() {
+	users := h.router.ApiRouter.Group("/users")
 	{
 		users.Get("/:id", h.FindUser)
-		users.Patch("/:id", h.PatchUser)
 	}
 }
 
+// FindUser godoc
+//
+//	@Tags		users
+//	@Produce	json
+//	@Param		id	path		int	true	"User ID"
+//	@Success	200	{object}	presenter.FindUserResponse
+//	@Router		/api/users/{id} [get]
 func (h *UserHandler) FindUser(c *fiber.Ctx) error {
 	var req = &presenter.FindUserRequest{}
 	if err := h.handlerUtil.Bind(c, req); err != nil {
@@ -53,6 +59,14 @@ func (h *UserHandler) FindUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(presenter.NewFindUserResponse(foundUser))
 }
 
+// PatchUser godoc
+//
+//	@Tags		users
+//	@Produce	json
+//	@Param		id					path		int							true	"User ID"
+//	@Param		PatchUserRequest	body		presenter.PatchUserRequest true "PatchUserRequest"
+//	@Success	200					{object}	presenter.PatchUserResponse
+//	@Router		/api/users/{id} [patch]
 func (h *UserHandler) PatchUser(c *fiber.Ctx) error {
 	var req = &presenter.PatchUserRequest{}
 	if err := h.handlerUtil.Bind(c, req); err != nil {
