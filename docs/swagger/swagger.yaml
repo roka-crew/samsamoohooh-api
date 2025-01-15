@@ -9,6 +9,58 @@ definitions:
     - ProviderGoogle
     - ProviderApple
     - ProviderKakao
+  presenter.CreateGroupRequest:
+    properties:
+      bookAuthor:
+        maxLength: 255
+        minLength: 1
+        type: string
+      bookIntroduction:
+        maxLength: 255
+        minLength: 0
+        type: string
+      bookPageMax:
+        minimum: 0
+        type: integer
+      bookPublisher:
+        maxLength: 255
+        minLength: 0
+        type: string
+      bookTitle:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - bookAuthor
+    - bookPageMax
+    - bookTitle
+    type: object
+  presenter.CreateGroupResponse:
+    properties:
+      bookAuthor:
+        type: string
+      bookIntroduction:
+        type: string
+      bookPageMax:
+        type: integer
+      bookPublisher:
+        type: string
+      bookTitle:
+        type: string
+    type: object
+  presenter.FindGroupResponse:
+    properties:
+      bookAuthor:
+        type: string
+      bookIntroduction:
+        type: string
+      bookPageMax:
+        type: integer
+      bookPublisher:
+        type: string
+      bookTitle:
+        type: string
+    type: object
   presenter.FindUserResponse:
     properties:
       nickname:
@@ -16,6 +68,37 @@ definitions:
       provider:
         $ref: '#/definitions/domain.Provider'
       resolution:
+        type: string
+    type: object
+  presenter.ListGroupsRequest:
+    properties:
+      limit:
+        minimum: 0
+        type: integer
+      offset:
+        minimum: 0
+        type: integer
+    required:
+    - limit
+    type: object
+  presenter.ListGroupsResponse:
+    properties:
+      groups:
+        items:
+          $ref: '#/definitions/presenter.ListGroupsResponseItem'
+        type: array
+    type: object
+  presenter.ListGroupsResponseItem:
+    properties:
+      bookAuthor:
+        type: string
+      bookIntroduction:
+        type: string
+      bookPageMax:
+        type: integer
+      bookPublisher:
+        type: string
+      bookTitle:
         type: string
     type: object
   presenter.PatchUserRequest:
@@ -39,6 +122,58 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/groups:
+    get:
+      parameters:
+      - description: List Groups Request
+        in: body
+        name: ListGroupsRequest
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.ListGroupsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.ListGroupsResponse'
+      tags:
+      - groups
+    post:
+      parameters:
+      - description: Create Group Request
+        in: body
+        name: CreateGroupRequest
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/presenter.CreateGroupResponse'
+      tags:
+      - groups
+  /api/groups/{id}:
+    get:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.FindGroupResponse'
+      tags:
+      - groups
   /api/users/{id}:
     get:
       parameters:
@@ -63,7 +198,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: PATCH USER REQUEST
+      - description: PatchUserRequest
         in: body
         name: PatchUserRequest
         required: true

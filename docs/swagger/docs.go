@@ -15,6 +15,89 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/groups": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "parameters": [
+                    {
+                        "description": "List Groups Request",
+                        "name": "ListGroupsRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ListGroupsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ListGroupsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "parameters": [
+                    {
+                        "description": "Create Group Request",
+                        "name": "CreateGroupRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presenter.CreateGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.CreateGroupResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/groups/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.FindGroupResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/{id}": {
             "get": {
                 "produces": [
@@ -57,7 +140,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "PATCH USER REQUEST",
+                        "description": "PatchUserRequest",
                         "name": "PatchUserRequest",
                         "in": "body",
                         "required": true,
@@ -91,6 +174,80 @@ const docTemplate = `{
                 "ProviderKakao"
             ]
         },
+        "presenter.CreateGroupRequest": {
+            "type": "object",
+            "required": [
+                "bookAuthor",
+                "bookPageMax",
+                "bookTitle"
+            ],
+            "properties": {
+                "bookAuthor": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                },
+                "bookIntroduction": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 0
+                },
+                "bookPageMax": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "bookPublisher": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 0
+                },
+                "bookTitle": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                }
+            }
+        },
+        "presenter.CreateGroupResponse": {
+            "type": "object",
+            "properties": {
+                "bookAuthor": {
+                    "type": "string"
+                },
+                "bookIntroduction": {
+                    "type": "string"
+                },
+                "bookPageMax": {
+                    "type": "integer"
+                },
+                "bookPublisher": {
+                    "type": "string"
+                },
+                "bookTitle": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.FindGroupResponse": {
+            "type": "object",
+            "properties": {
+                "bookAuthor": {
+                    "type": "string"
+                },
+                "bookIntroduction": {
+                    "type": "string"
+                },
+                "bookPageMax": {
+                    "type": "integer"
+                },
+                "bookPublisher": {
+                    "type": "string"
+                },
+                "bookTitle": {
+                    "type": "string"
+                }
+            }
+        },
         "presenter.FindUserResponse": {
             "type": "object",
             "properties": {
@@ -101,6 +258,53 @@ const docTemplate = `{
                     "$ref": "#/definitions/domain.Provider"
                 },
                 "resolution": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.ListGroupsRequest": {
+            "type": "object",
+            "required": [
+                "limit"
+            ],
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "offset": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "presenter.ListGroupsResponse": {
+            "type": "object",
+            "properties": {
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/presenter.ListGroupsResponseItem"
+                    }
+                }
+            }
+        },
+        "presenter.ListGroupsResponseItem": {
+            "type": "object",
+            "properties": {
+                "bookAuthor": {
+                    "type": "string"
+                },
+                "bookIntroduction": {
+                    "type": "string"
+                },
+                "bookPageMax": {
+                    "type": "integer"
+                },
+                "bookPublisher": {
+                    "type": "string"
+                },
+                "bookTitle": {
                     "type": "string"
                 }
             }
