@@ -15,91 +15,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/groups": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "parameters": [
-                    {
-                        "description": "List Groups Request",
-                        "name": "ListGroupsRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/presenter.ListGroupsRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.ListGroupsResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "parameters": [
-                    {
-                        "description": "Create Group Request",
-                        "name": "CreateGroupRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/presenter.CreateGroupRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.CreateGroupResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/groups/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.FindGroupResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -107,6 +29,13 @@ const docTemplate = `{
                     "users"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "User ID",
@@ -125,6 +54,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -132,6 +66,13 @@ const docTemplate = `{
                     "users"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "User ID",
@@ -151,9 +92,70 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/presenter.PatchUserResponse"
+                            "$ref": "#/definitions/presenter.RefreshResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/validate": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Token"
                         }
                     }
                 }
@@ -161,150 +163,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "domain.Provider": {
+        "domain.Kind": {
             "type": "string",
             "enum": [
-                "GOOGLE",
-                "APPLE",
-                "KAKAO"
+                "ACCESS",
+                "REFRESH"
             ],
             "x-enum-varnames": [
-                "ProviderGoogle",
-                "ProviderApple",
-                "ProviderKakao"
+                "KindAccess",
+                "KindRefresh"
             ]
         },
-        "presenter.CreateGroupRequest": {
-            "type": "object",
-            "required": [
-                "bookAuthor",
-                "bookPageMax",
-                "bookTitle"
-            ],
-            "properties": {
-                "bookAuthor": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
-                },
-                "bookIntroduction": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 0
-                },
-                "bookPageMax": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "bookPublisher": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 0
-                },
-                "bookTitle": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
-                }
-            }
-        },
-        "presenter.CreateGroupResponse": {
+        "domain.Token": {
             "type": "object",
             "properties": {
-                "bookAuthor": {
+                "kind": {
+                    "description": "Kind (토큰의 종류)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Kind"
+                        }
+                    ]
+                },
+                "per": {
+                    "description": "Permission (권한)",
                     "type": "string"
                 },
-                "bookIntroduction": {
-                    "type": "string"
-                },
-                "bookPageMax": {
+                "userID": {
+                    "description": "사용자의 ID",
                     "type": "integer"
-                },
-                "bookPublisher": {
-                    "type": "string"
-                },
-                "bookTitle": {
-                    "type": "string"
-                }
-            }
-        },
-        "presenter.FindGroupResponse": {
-            "type": "object",
-            "properties": {
-                "bookAuthor": {
-                    "type": "string"
-                },
-                "bookIntroduction": {
-                    "type": "string"
-                },
-                "bookPageMax": {
-                    "type": "integer"
-                },
-                "bookPublisher": {
-                    "type": "string"
-                },
-                "bookTitle": {
-                    "type": "string"
                 }
             }
         },
         "presenter.FindUserResponse": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "nickname": {
                     "type": "string"
                 },
                 "provider": {
-                    "$ref": "#/definitions/domain.Provider"
+                    "type": "string"
                 },
                 "resolution": {
-                    "type": "string"
-                }
-            }
-        },
-        "presenter.ListGroupsRequest": {
-            "type": "object",
-            "required": [
-                "limit"
-            ],
-            "properties": {
-                "limit": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "offset": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "presenter.ListGroupsResponse": {
-            "type": "object",
-            "properties": {
-                "groups": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/presenter.ListGroupsResponseItem"
-                    }
-                }
-            }
-        },
-        "presenter.ListGroupsResponseItem": {
-            "type": "object",
-            "properties": {
-                "bookAuthor": {
-                    "type": "string"
-                },
-                "bookIntroduction": {
-                    "type": "string"
-                },
-                "bookPageMax": {
-                    "type": "integer"
-                },
-                "bookPublisher": {
-                    "type": "string"
-                },
-                "bookTitle": {
                     "type": "string"
                 }
             }
@@ -313,24 +216,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "nickname": {
-                    "type": "string",
-                    "maxLength": 12,
-                    "minLength": 3
-                },
-                "resolution": {
-                    "type": "string",
-                    "maxLength": 18,
-                    "minLength": 0
-                }
-            }
-        },
-        "presenter.PatchUserResponse": {
-            "type": "object",
-            "properties": {
-                "nickname": {
                     "type": "string"
                 },
                 "resolution": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.RefreshResponse": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
                     "type": "string"
                 }
             }
