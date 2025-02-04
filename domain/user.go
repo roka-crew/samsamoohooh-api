@@ -1,48 +1,15 @@
 package domain
 
-import (
-	"gorm.io/gorm"
-)
+import "context"
 
-type Provider string
-
-const (
-	ProviderGoogle Provider = "GOOGLE"
-	ProviderApple  Provider = "APPLE"
-	ProviderKakao  Provider = "KAKAO"
-)
-
-type User struct {
-	gorm.Model
-	Nickname   string   `gorm:"type:varchar(255); not null"`
-	Resolution *string  `gorm:"type:varchar(255); null"`
-	Provider   Provider `gorm:"type:enum('GOOGLE', 'APPLE', 'KAKAO'); not null"`
-
-	// relation
-	Groups []Group `gorm:"many2many:user_group;"`
-	Topics []Topic
+type UserStore interface {
+	CreateUser(ctx context.Context, params CreateUserParams) (*User, error)
+	FindUser(ctx context.Context, params FindUserParams) (*User, error)
+	PatchUser(ctx context.Context, params PatchUserParams) error
+	DeleteUser(ctx context.Context, params DeleteUserParams) error
 }
 
-type Users []User
-
-func (u Users) Len() int {
-	return len(u)
-}
-
-func (u Users) Empty() bool {
-	return u.Len() == 0
-}
-
-func (u Users) First() User {
-	if u.Empty() {
-		return User{}
-	}
-	return u[0]
-}
-
-func (u Users) Last() User {
-	if u.Empty() {
-		return User{}
-	}
-	return u[u.Len()-1]
+type UserService interface {
+	FindUserByMe(ctx context.Context, request FindUserByMeRequest) (*User, error)
+	PatchByMeUser(ctx context.Context, request PatchUserByMeRequest) error
 }

@@ -1,4 +1,4 @@
-package jwt
+package token
 
 import (
 	"samsamoohooh-api/pkg/config"
@@ -44,7 +44,7 @@ type token struct {
 	cfg *config.Config
 }
 
-func New(cfg *config.Config) *token {
+func New(cfg *config.Config) Token {
 	return &token{cfg: cfg}
 }
 

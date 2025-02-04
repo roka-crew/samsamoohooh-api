@@ -12,7 +12,7 @@ import (
 
 type Router struct {
 	cfg *config.Config
-	app *echo.Echo
+	*echo.Echo
 }
 
 func NewRouter(
@@ -40,7 +40,7 @@ func NewRouter(
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			if err := r.app.Shutdown(ctx); err != nil {
+			if err := r.Echo.Shutdown(ctx); err != nil {
 				return err
 			}
 
@@ -48,10 +48,10 @@ func NewRouter(
 		},
 	})
 
-	r.app = app
+	r.Echo = app
 	return r
 }
 
 func (r Router) listen() error {
-	return r.app.Start(r.cfg.Listen)
+	return r.Echo.Start(r.cfg.Listen)
 }
