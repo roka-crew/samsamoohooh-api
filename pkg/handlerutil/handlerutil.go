@@ -13,7 +13,7 @@ const (
 
 func Locals[T any](ctx echo.Context, key string, obj ...T) (T, error) {
 	var zero T
-	if len(obj) == 0 {
+	if len(obj) != 0 {
 		ctx.Set(key, obj[0])
 		return zero, nil
 	}

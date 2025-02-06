@@ -6,7 +6,6 @@ import (
 	"samsamoohooh-api/pkg/config"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"go.uber.org/fx"
 
@@ -27,11 +26,16 @@ func New(
 	}
 
 	app := echo.New()
-	app.Use(middleware.Recover())
+	// app.Use(middleware.Recover())
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	// app.HTTPErrorHandler = echo.New().DefaultHTTPErrorHandler
+	app.HTTPErrorHandler = func(err error, c echo.Context) {
+		c.Logger().Error(err)
+		c.JSON(500, map[string]interface{}{
+			"message": "internal server error",
+		})
+	}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {

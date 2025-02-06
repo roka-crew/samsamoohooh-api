@@ -6,6 +6,7 @@ import (
 	"samsamoohooh-api/internal/user/presenter"
 	"samsamoohooh-api/pkg/handlerutil"
 	"samsamoohooh-api/router"
+	"samsamoohooh-api/router/middleware/guard"
 
 	"github.com/labstack/echo/v4"
 )
@@ -18,13 +19,14 @@ type userHandler struct {
 func NewUserHandler(
 	router *router.Router,
 	userService domain.UserService,
+	guard *guard.Guard,
 ) *userHandler {
 	handler := &userHandler{
 		router:      router,
 		userService: userService,
 	}
 
-	users := router.Group("/users")
+	users := router.Group("/users", guard.Authorization)
 	{
 		users.GET("/me", handler.FindUserByMe)
 		users.PATCH("/me", handler.PatchByMeUser)
@@ -33,16 +35,15 @@ func NewUserHandler(
 	return handler
 }
 
-// FindUserByMe godoc
+// FindUserByMe
 //
-//	@Summary		Find user by me
-//	@Tags			User
-//	@Description	Find user by me - ✅
-//	@Accept			json
-//	@Produce		json
-//	@Success		200					{object}	presenter.FindUserByMeResponse	"사용자 조회 성공"
-//	@Router			/users/me [get]
-//	@Security		BearerAuth
+//	@Summary	Find user by me - ✅
+//	@Tags		User
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	presenter.FindUserByMeResponse	"사용자 조회 성공"
+//	@Router		/users/me [get]
+//	@Security	BearerAuth
 func (h userHandler) FindUserByMe(c echo.Context) error {
 	var (
 		err error
@@ -65,17 +66,15 @@ func (h userHandler) FindUserByMe(c echo.Context) error {
 	}
 }
 
-// PatchByMeUser godoc
-//
-//	@Summary		Patch user by me
-//	@Tags			User
-//	@Description	Patch user by me - ✅
-//	@Accept			json
-//	@Produce		json
-//	@Param			PatchUserByMeRequest	body	domain.PatchUserByMeRequest	true	"사용자 수정 요청"
-//	@Success		204						"사용자 수정 성공"
-//	@Router			/users/me [patch]
-//	@Security		BearerAuth
+// PatchByMeUser
+// @Summary	Patch user by me - ✅
+// @Tags		User
+// @Accept		json
+// @Produce	json
+// @Param		PatchUserByMeRequest	body	domain.PatchUserByMeRequest	true	"사용자 수정 요청"
+// @Success	204						"사용자 수정 성공"
+// @Router		/users/me [patch]
+// @Security	BearerAuth
 func (h userHandler) PatchByMeUser(c echo.Context) error {
 	var (
 		err error

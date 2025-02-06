@@ -8,6 +8,7 @@ import (
 	"samsamoohooh-api/pkg/mysql"
 	"samsamoohooh-api/pkg/token"
 	"samsamoohooh-api/router"
+	"samsamoohooh-api/router/middleware/guard"
 
 	"go.uber.org/fx"
 )
@@ -19,6 +20,8 @@ func main() {
 			config.New,
 			mysql.New,
 			token.New,
+
+			guard.New,
 
 			userHandler.NewUserHandler,
 			userService.NewUserService,
