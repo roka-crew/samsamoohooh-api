@@ -7,7 +7,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"go.uber.org/fx"
+
+	_ "samsamoohooh-api/docs/swagger"
 )
 
 type Router struct {
@@ -15,7 +18,7 @@ type Router struct {
 	*echo.Echo
 }
 
-func NewRouter(
+func New(
 	lc fx.Lifecycle,
 	cfg *config.Config,
 ) *Router {
@@ -25,6 +28,8 @@ func NewRouter(
 
 	app := echo.New()
 	app.Use(middleware.Recover())
+
+	app.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// app.HTTPErrorHandler = echo.New().DefaultHTTPErrorHandler
 

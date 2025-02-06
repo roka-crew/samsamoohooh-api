@@ -16,7 +16,7 @@ type Mysql struct {
 	*gorm.DB
 }
 
-func New(cfg config.Config) (*Mysql, error) {
+func New(cfg *config.Config) (*Mysql, error) {
 	dsn := fmt.Sprintf(format,
 		cfg.Mysql.User,
 		cfg.Mysql.Password,

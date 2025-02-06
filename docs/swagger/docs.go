@@ -15,40 +15,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/users/{id}": {
+        "/users/me": {
             "get": {
                 "security": [
                     {
-                        "Bearer": []
+                        "BearerAuth": []
                     }
+                ],
+                "description": "Find user by me - ✅",
+                "consumes": [
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "User"
                 ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Find user by me",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "사용자 조회 성공",
                         "schema": {
-                            "$ref": "#/definitions/presenter.FindUserResponse"
+                            "$ref": "#/definitions/presenter.FindUserByMeResponse"
                         }
                     }
                 }
@@ -56,146 +45,65 @@ const docTemplate = `{
             "patch": {
                 "security": [
                     {
-                        "Bearer": []
+                        "BearerAuth": []
                     }
+                ],
+                "description": "Patch user by me - ✅",
+                "consumes": [
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "User"
                 ],
+                "summary": "Patch user by me",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "PatchUserRequest",
-                        "name": "PatchUserRequest",
+                        "description": "사용자 수정 요청",
+                        "name": "PatchUserByMeRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/presenter.PatchUserRequest"
+                            "$ref": "#/definitions/domain.PatchUserByMeRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/auth/refresh": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.RefreshResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/validate": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Token"
-                        }
+                    "204": {
+                        "description": "사용자 수정 성공"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "domain.Kind": {
-            "type": "string",
-            "enum": [
-                "ACCESS",
-                "REFRESH"
-            ],
-            "x-enum-varnames": [
-                "KindAccess",
-                "KindRefresh"
-            ]
-        },
-        "domain.Token": {
+        "domain.PatchUserByMeRequest": {
             "type": "object",
             "properties": {
-                "kind": {
-                    "description": "Kind (토큰의 종류)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/domain.Kind"
-                        }
-                    ]
-                },
-                "per": {
-                    "description": "Permission (권한)",
+                "nickname": {
                     "type": "string"
                 },
-                "userID": {
-                    "description": "사용자의 ID",
-                    "type": "integer"
+                "resolution": {
+                    "type": "string"
                 }
             }
         },
-        "presenter.FindUserResponse": {
+        "domain.Provider": {
+            "type": "string",
+            "enum": [
+                "GOOGLE",
+                "APPLE",
+                "KAKAO"
+            ],
+            "x-enum-varnames": [
+                "ProviderGoogle",
+                "ProviderApple",
+                "ProviderKakao"
+            ]
+        },
+        "presenter.FindUserByMeResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -204,30 +112,11 @@ const docTemplate = `{
                 "nickname": {
                     "type": "string"
                 },
+                "omitemtpy": {
+                    "type": "string"
+                },
                 "provider": {
-                    "type": "string"
-                },
-                "resolution": {
-                    "type": "string"
-                }
-            }
-        },
-        "presenter.PatchUserRequest": {
-            "type": "object",
-            "properties": {
-                "nickname": {
-                    "type": "string"
-                },
-                "resolution": {
-                    "type": "string"
-                }
-            }
-        },
-        "presenter.RefreshResponse": {
-            "type": "object",
-            "properties": {
-                "accessToken": {
-                    "type": "string"
+                    "$ref": "#/definitions/domain.Provider"
                 }
             }
         }
