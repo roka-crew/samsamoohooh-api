@@ -5,7 +5,7 @@ import "samsamoohooh-api/domain"
 type FindUserByMeResponse struct {
 	ID         int             `json:"id"`
 	Nickname   string          `json:"nickname"`
-	Resolution *string         `json:"omitemtpy,resolution"`
+	Resolution *string         `json:"resolution,omitemtpy"`
 	Provider   domain.Provider `json:"provider"`
 }
 

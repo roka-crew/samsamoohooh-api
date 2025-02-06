@@ -14,7 +14,7 @@ type Config struct {
 		Password string `yaml:"password"`
 		Host     string `yaml:"host"`
 		Port     string `yaml:"port"`
-		Database string `yaml:"database"`
+		DBname   string `yaml:"dbName"`
 	} `yaml:"mysql"`
 
 	JWT struct {

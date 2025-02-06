@@ -22,7 +22,7 @@ func New(cfg *config.Config) (*Mysql, error) {
 		cfg.Mysql.Password,
 		cfg.Mysql.Host,
 		cfg.Mysql.Port,
-		cfg.Mysql.Database,
+		cfg.Mysql.DBname,
 	)
 
 	db, err := gorm.Open(
