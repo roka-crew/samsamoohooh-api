@@ -47,8 +47,8 @@ type ListThoughtParam struct {
 	Content     *string
 	IsAnonymous *bool
 
-	IsPreloadUser     bool
-	IsPreloadMileston bool
+	WithUser     bool
+	WithMileston bool
 }
 
 type ListThoughtsParam struct {

@@ -59,11 +59,11 @@ func (r *ThoughtRepository) ListThought(ctx context.Context, param domain.ListTh
 		query = query.Where("is_anonymous = ?", *param.IsAnonymous)
 	}
 
-	if param.IsPreloadUser {
+	if param.WithUser {
 		query = query.Preload("User")
 	}
 
-	if param.IsPreloadMileston {
+	if param.WithMileston {
 		query = query.Preload("Milestone")
 	}
 
