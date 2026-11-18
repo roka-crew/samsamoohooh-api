@@ -19,3 +19,6 @@ type Thought struct {
 	Milestone *Milestone `gorm:"foreignKey:MilestoneID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	User      *User      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
+
+type ThoughtRepository interface {
+}
