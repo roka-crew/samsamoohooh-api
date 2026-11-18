@@ -38,6 +38,7 @@ type CreateUserParam struct {
 
 type ListUserParam struct {
 	ID           uint
+	DeviceID     *string
 	WithBooks    bool
 	WithThoughts bool
 }
@@ -45,8 +46,8 @@ type ListUserParam struct {
 type ListUsersParam struct {
 	// Filters
 	IDs       []uint
-	Name      []string
-	DeviceIDs []string
+	Names     []string
+	DeviceIDs []*string
 
 	// Pagination & Sorting
 	Limit   int

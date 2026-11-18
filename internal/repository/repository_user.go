@@ -21,23 +21,26 @@ func NewUserRepository(
 	}
 }
 
-func (u *UserRepository) CreateUser(ctx context.Context, param domain.CreateUserParam) (*domain.User, error) {
+func (r *UserRepository) CreateUser(ctx context.Context, param domain.CreateUserParam) (*domain.User, error) {
 	user := domain.User{
 		Name:     param.Name,
 		DeviceID: param.DeviceID,
 	}
 
-	if err := u.db.WithContext(ctx).Create(&user).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(&user).Error; err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func (u *UserRepository) ListUser(ctx context.Context, param domain.ListUserParam) (*domain.User, error) {
-	query := u.db.WithContext(ctx)
+func (r *UserRepository) ListUser(ctx context.Context, param domain.ListUserParam) (*domain.User, error) {
+	query := r.db.WithContext(ctx)
 	if param.ID > 0 {
 		query = query.Where("id = ?", param.ID)
+	}
+	if param.DeviceID != nil {
+		query = query.Where("device_id = ?", *param.DeviceID)
 	}
 	if param.WithBooks {
 		query = query.Preload("UserBooks")
@@ -54,17 +57,18 @@ func (u *UserRepository) ListUser(ctx context.Context, param domain.ListUserPara
 	return &user, nil
 }
 
-func (u *UserRepository) ListUsers(ctx context.Context, param domain.ListUsersParam) (domain.Users, error) {
-	query := u.db.WithContext(ctx).Model(&domain.User{})
+func (r *UserRepository) ListUsers(ctx context.Context, param domain.ListUsersParam) (domain.Users, error) {
+	query := r.db.WithContext(ctx).Model(&domain.User{})
 
 	if len(param.IDs) > 0 {
 		query = query.Where("id IN ?", param.IDs)
 	}
-	if len(param.Name) > 0 {
-		query = query.Where("name IN ?", param.Name)
+	if len(param.Names) > 0 {
+		query = query.Where("name IN ?", param.Names)
 	}
 	if len(param.DeviceIDs) > 0 {
-		query = query.Where("biography IN ?", param.DeviceIDs)
+
+		query = query.Where("device_id IN ?", param.DeviceIDs)
 	}
 
 	if param.WithUserBooks {
@@ -93,7 +97,7 @@ func (u *UserRepository) ListUsers(ctx context.Context, param domain.ListUsersPa
 	return users, nil
 }
 
-func (u *UserRepository) PatchUser(ctx context.Context, param domain.PatchUserParam) error {
+func (r *UserRepository) PatchUser(ctx context.Context, param domain.PatchUserParam) error {
 	updates := make(map[string]any)
 
 	if param.Name != nil {
@@ -107,7 +111,7 @@ func (u *UserRepository) PatchUser(ctx context.Context, param domain.PatchUserPa
 		return nil
 	}
 
-	result := u.db.WithContext(ctx).Model(&domain.User{}).Where("id = ?", param.ID).Updates(updates)
+	result := r.db.WithContext(ctx).Model(&domain.User{}).Where("id = ?", param.ID).Updates(updates)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -118,12 +122,12 @@ func (u *UserRepository) PatchUser(ctx context.Context, param domain.PatchUserPa
 	return nil
 }
 
-func (u *UserRepository) PatchUsers(ctx context.Context, param domain.PatchUsersParam) error {
+func (r *UserRepository) PatchUsers(ctx context.Context, param domain.PatchUsersParam) error {
 	if len(param) == 0 {
 		return nil
 	}
 
-	return u.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		for _, p := range param {
 			updates := make(map[string]any)
 
@@ -150,8 +154,8 @@ func (u *UserRepository) PatchUsers(ctx context.Context, param domain.PatchUsers
 	})
 }
 
-func (u *UserRepository) DeleteUser(ctx context.Context, param domain.DeleteUserParam) error {
-	query := u.db.WithContext(ctx)
+func (r *UserRepository) DeleteUser(ctx context.Context, param domain.DeleteUserParam) error {
+	query := r.db.WithContext(ctx)
 	if param.IsHardDelete {
 		query = query.Unscoped()
 	}
@@ -161,7 +165,7 @@ func (u *UserRepository) DeleteUser(ctx context.Context, param domain.DeleteUser
 	}
 
 	if param.DeviceID != nil {
-		query = query.Where("device_id = ?", param.DeviceID)
+		query = query.Where("device_id = ?", *param.DeviceID)
 	}
 	result := query.Delete(&domain.User{})
 	if result.Error != nil {
@@ -174,26 +178,38 @@ func (u *UserRepository) DeleteUser(ctx context.Context, param domain.DeleteUser
 	return nil
 }
 
-func (u *UserRepository) DeleteUsers(ctx context.Context, param domain.DeleteUsersParam) error {
+func (r *UserRepository) DeleteUsers(ctx context.Context, param domain.DeleteUsersParam) error {
 	if len(param) == 0 {
 		return nil
 	}
 
-	return u.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		for _, p := range param {
-			query := tx
-			if p.IsHardDelete {
-				query = query.Unscoped()
-			}
+	var softDeleteIDs []uint
+	var hardDeleteIDs []uint
 
-			result := query.Delete(&domain.User{}, "id = ?", p.ID)
-			if result.Error != nil {
-				return fmt.Errorf("delete user(id=%d) failed: %w", p.ID, result.Error)
-			}
-			if result.RowsAffected == 0 {
-				return fmt.Errorf("delete user(id=%d) failed: %w", p.ID, gorm.ErrRecordNotFound)
+	for _, p := range param {
+		if p.ID == 0 {
+			continue
+		}
+		if p.IsHardDelete {
+			hardDeleteIDs = append(hardDeleteIDs, p.ID)
+		} else {
+			softDeleteIDs = append(softDeleteIDs, p.ID)
+		}
+	}
+
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if len(softDeleteIDs) > 0 {
+			if err := tx.Where("id IN ?", softDeleteIDs).Delete(&domain.User{}).Error; err != nil {
+				return fmt.Errorf("batch soft delete failed: %w", err)
 			}
 		}
+
+		if len(hardDeleteIDs) > 0 {
+			if err := tx.Unscoped().Where("id IN ?", hardDeleteIDs).Delete(&domain.User{}).Error; err != nil {
+				return fmt.Errorf("batch hard delete failed: %w", err)
+			}
+		}
+
 		return nil
 	})
 }
